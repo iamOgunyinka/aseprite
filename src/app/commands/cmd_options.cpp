@@ -28,6 +28,7 @@
 #include "app/tx.h"
 #include "app/ui/color_button.h"
 #include "app/ui/main_window.h"
+#include "app/ui/main_menu_bar.h"
 #include "app/ui/pref_widget.h"
 #include "app/ui/rgbmap_algorithm_selector.h"
 #include "app/ui/separator_in_view.h"
@@ -956,9 +957,18 @@ private:
   }
 
   void updateScreenScaling() {
+    const auto prevBounds = bounds();
     ui::Manager* manager = ui::Manager::getDefault();
     os::instance()->setGpuAcceleration(m_pref.general.gpuAcceleration());
     manager->updateAllDisplaysWithNewScale(m_pref.general.screenScale());
+    App::instance()->mainWindow()->getMenuBar()->reload();
+    expandWindow(prevBounds.size());
+    // const auto expanseBounds = expanse()->bounds();
+    // expanse()->setBounds(gfx::Rect(expanseBounds.origin(),
+    //  gfx::Size(sectionListbox()->size().w, expanseBounds.h)));
+    // setAutoRemap(true);
+    invalidate();
+    // flushRedraw();
   }
 
   void onApply() {
