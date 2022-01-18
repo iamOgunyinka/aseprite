@@ -9,7 +9,10 @@
 #pragma once
 
 #include "doc/frame.h"
+#include "gfx/rect.h"
+#include "gfx/size.h"
 
+#include <algorithm>
 #include <vector>
 
 namespace doc {
@@ -125,6 +128,13 @@ namespace doc {
         ++it;
         m_keys.insert(it, Key(frame, value));
       }
+
+      std::sort(
+        m_keys.begin(), m_keys.end(), [](const Key& key1, const Key& key2) {
+          return (key1.frame() < key2.frame()) ||
+                 isLessRect(key1.value()->bounds(), key2.value()->bounds()) ||
+                 isLessRect(key1.value()->center(), key2.value()->center());
+        });
     }
 
     T* remove(const frame_t frame) {
@@ -192,6 +202,10 @@ namespace doc {
     }
 
   private:
+    static bool isLessRect(const gfx::Rect& a, const gfx::Rect& b) {
+      return (a.size().w < b.size().w) || (a.size().h < b.size().h);
+    }
+
     List m_keys;
   };
 
